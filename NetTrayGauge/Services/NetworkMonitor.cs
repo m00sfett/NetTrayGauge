@@ -17,6 +17,7 @@ public class NetworkMonitor : IDisposable
     private readonly LoggingService _logger;
     private readonly Func<Settings> _settingsAccessor;
     private readonly ConcurrentQueue<(double rx, double tx)> _history = new();
+    private readonly TimeSpan _stopTimeout = TimeSpan.FromSeconds(2);
     private CancellationTokenSource? _cts;
     private Task? _samplingTask;
     private NetworkInterface? _currentInterface;
@@ -41,12 +42,40 @@ public class NetworkMonitor : IDisposable
 
     public void Stop()
     {
-        if (_cts != null)
+        if (_cts == null && _samplingTask == null)
         {
-            _cts.Cancel();
-            _cts.Dispose();
-            _cts = null;
+            return;
         }
+
+        var samplingTask = _samplingTask;
+        _cts?.Cancel();
+
+        if (samplingTask != null)
+        {
+            try
+            {
+                if (!samplingTask.Wait(_stopTimeout))
+                {
+                    _logger.Warn($"Stopping network sampling timed out after {_stopTimeout.TotalSeconds:0}s");
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when cancellation completes promptly.
+            }
+            catch (AggregateException ex) when (ex.InnerExceptions.All(e => e is OperationCanceledException || e is TaskCanceledException))
+            {
+                // Aggregate cancellation exceptions are also expected here.
+            }
+            catch (Exception ex)
+            {
+                _logger.Warn($"Stopping network sampling failed: {ex.Message}");
+            }
+        }
+
+        _samplingTask = null;
+        _cts?.Dispose();
+        _cts = null;
     }
 
     public IEnumerable<NetworkInterface> GetInterfaces()
