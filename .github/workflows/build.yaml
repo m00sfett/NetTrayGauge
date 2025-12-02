@@ -1,0 +1,63 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      SOLUTION_PATH: NetTrayGauge.sln
+      PROJECT_PATH: NetTrayGauge/NetTrayGauge.csproj
+      CONFIG: Release
+      RUNTIME: win-x64   # alternativ: win-arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: ${{ runner.os }}-nuget-
+
+      - name: Restore
+        run: dotnet restore "$env:SOLUTION_PATH"
+
+      - name: Build
+        run: dotnet build "$env:SOLUTION_PATH" -c "$env:CONFIG" --no-restore
+
+      - name: Publish single-file
+        run: >
+          dotnet publish "$env:PROJECT_PATH" -c "$env:CONFIG" -r "$env:RUNTIME"
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true
+          -p:PublishTrimmed=false
+          -p:DebugType=None
+          -o "$env:RUNNER_TEMP/publish"
+
+      - name: Zip artifact
+        run: |
+          cd "$env:RUNNER_TEMP/publish"
+          Compress-Archive -Path * -DestinationPath NetTrayGauge-${{ env.RUNTIME }}.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NetTrayGauge-${{ env.RUNTIME }}
+          path: ${{ env.RUNNER_TEMP }}/publish/NetTrayGauge-${{ env.RUNTIME }}.zip
+          retention-days: 14
