@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 using NetTrayGauge.Models;
 using NetTrayGauge.Utilities;
 
@@ -23,7 +24,7 @@ public class TrayRenderer : IDisposable
     {
         var size = (int)((int)settings.TrayIconSize * dpiScale);
         size = Math.Max(size, 16);
-        var bmp = new Bitmap(size, size, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+        using var bmp = new Bitmap(size, size, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
         using var g = Graphics.FromImage(bmp);
         g.SmoothingMode = SmoothingMode.AntiAlias;
         g.Clear(GetBackground(settings.Theme));
@@ -39,9 +40,21 @@ public class TrayRenderer : IDisposable
             DrawOverlayText(g, size, snapshot, settings);
         }
 
-        _lastIcon?.Dispose();
-        _lastIcon = Icon.FromHandle(bmp.GetHicon());
-        return _lastIcon;
+        var hIcon = bmp.GetHicon();
+        var icon = Icon.FromHandle(hIcon);
+
+        try
+        {
+            _lastIcon?.Dispose();
+            _lastIcon = (Icon)icon.Clone();
+
+            return _lastIcon!;
+        }
+        finally
+        {
+            DestroyIcon(hIcon);
+            icon.Dispose();
+        }
     }
 
     private void DrawGauge(Graphics g, PointF center, float radius, double value, double maxValue, bool upper, Settings settings)
@@ -128,4 +141,7 @@ public class TrayRenderer : IDisposable
         _overlayFont.Dispose();
         _lastIcon?.Dispose();
     }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool DestroyIcon(nint hIcon);
 }
