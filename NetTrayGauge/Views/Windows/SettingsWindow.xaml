@@ -10,37 +10,37 @@
         </Grid.RowDefinitions>
         <TabControl>
             <TabItem Header="Allgemein">
-                <StackPanel Margin="12" Orientation="Vertical" Spacing="8">
-                    <CheckBox Content="Autostart aktivieren" IsChecked="{Binding Settings.StartWithWindows}" />
-                    <CheckBox Content="Digitale Anzeige" IsChecked="{Binding Settings.ShowDigitalOverlay}" />
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <TextBlock Text="Intervall (ms)" VerticalAlignment="Center" />
-                        <TextBox Width="80" Text="{Binding Settings.UpdateIntervalMs}" />
-                        <TextBlock Text="Glättung" VerticalAlignment="Center" />
+                <StackPanel Margin="12" Orientation="Vertical">
+                    <CheckBox Margin="0,0,0,8" Content="Autostart aktivieren" IsChecked="{Binding Settings.StartWithWindows}" />
+                    <CheckBox Margin="0,0,0,8" Content="Digitale Anzeige" IsChecked="{Binding Settings.ShowDigitalOverlay}" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,6,0" Text="Intervall (ms)" VerticalAlignment="Center" />
+                        <TextBox Margin="0,0,6,0" Width="80" Text="{Binding Settings.UpdateIntervalMs}" />
+                        <TextBlock Margin="0,0,6,0" Text="Glättung" VerticalAlignment="Center" />
                         <TextBox Width="60" Text="{Binding Settings.SmoothingSamples}" />
                     </StackPanel>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Netzwerk">
-                <StackPanel Margin="12" Orientation="Vertical" Spacing="8">
-                    <TextBlock Text="Bevorzugtes Interface" />
-                    <ComboBox ItemsSource="{Binding Interfaces}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Settings.PreferredInterfaceId}" />
-                    <Button Content="Liste aktualisieren" Click="RefreshInterfaces_OnClick" Width="160" />
+                <StackPanel Margin="12" Orientation="Vertical">
+                    <TextBlock Margin="0,0,0,8" Text="Bevorzugtes Interface" />
+                    <ComboBox Margin="0,0,0,8" ItemsSource="{Binding Interfaces}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Settings.PreferredInterfaceId}" />
+                    <Button Margin="0,0,0,8" Content="Liste aktualisieren" Click="RefreshInterfaces_OnClick" Width="160" />
                 </StackPanel>
             </TabItem>
             <TabItem Header="Design">
-                <StackPanel Margin="12" Orientation="Vertical" Spacing="8">
-                    <TextBlock Text="Theme" />
-                    <ComboBox SelectedValue="{Binding Settings.Theme}" ItemsSource="{Binding Source={x:Static local:SettingsWindow.ThemeValues}}" />
-                    <TextBlock Text="Tray-Icon Größe" />
-                    <ComboBox SelectedValue="{Binding Settings.TrayIconSize}" ItemsSource="{Binding Source={x:Static local:SettingsWindow.TrayIconSizeValues}}" />
+                <StackPanel Margin="12" Orientation="Vertical">
+                    <TextBlock Margin="0,0,0,8" Text="Theme" />
+                    <ComboBox Margin="0,0,0,8" SelectedValue="{Binding Settings.Theme}" ItemsSource="{Binding Source={x:Static local:SettingsWindow.ThemeValues}}" />
+                    <TextBlock Margin="0,0,0,8" Text="Tray-Icon Größe" />
+                    <ComboBox Margin="0,0,0,8" SelectedValue="{Binding Settings.TrayIconSize}" ItemsSource="{Binding Source={x:Static local:SettingsWindow.TrayIconSizeValues}}" />
                 </StackPanel>
             </TabItem>
         </TabControl>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,12,0,0">
-            <Button Content="Export" Click="OnExport" />
-            <Button Content="Import" Click="OnImport" />
-            <Button Content="Speichern" Click="OnSave" IsDefault="True" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Margin="0,0,8,0" Content="Export" Click="OnExport" />
+            <Button Margin="0,0,8,0" Content="Import" Click="OnImport" />
+            <Button Margin="0,0,8,0" Content="Speichern" Click="OnSave" IsDefault="True" />
             <Button Content="Schließen" Click="OnClose" IsCancel="True" />
         </StackPanel>
     </Grid>
