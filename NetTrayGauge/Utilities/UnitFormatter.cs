@@ -1,44 +1,53 @@
-using System;
-using NetTrayGauge.Models;
-
 namespace NetTrayGauge.Utilities;
 
-/// <summary>
-/// Converts numeric speeds to human readable strings.
-/// </summary>
+using System.Globalization;
+using NetTrayGauge.Models;
+
 public static class UnitFormatter
 {
-    public static (double value, string unit) Format(double bytesPerSecond, UnitMode mode)
+    /// <summary>
+    /// Formats a throughput given as BYTES PER SECOND according to the configured UnitMode.
+    /// Returns a compact string like "12.3 Mbit/s" or "1.1 MiB/s".
+    /// </summary>
+    public static string Format(double bytesPerSecond, UnitMode unitMode, int decimals = 1)
     {
-        return mode switch
-        {
-            UnitMode.Bps => (bytesPerSecond, "B/s"),
-            UnitMode.KiBps => (bytesPerSecond / 1024d, "KiB/s"),
-            UnitMode.MiBps => (bytesPerSecond / 1024d / 1024d, "MiB/s"),
-            UnitMode.bps => (bytesPerSecond * 8d, "bit/s"),
-            UnitMode.Kbps => (bytesPerSecond * 8d / 1000d, "Kbit/s"),
-            UnitMode.Mbps => (bytesPerSecond * 8d / 1000d / 1000d, "Mbit/s"),
-            _ => Auto(bytesPerSecond)
-        };
+        var (val, unit) = ToValueAndUnit(bytesPerSecond, unitMode);
+        if (double.IsNaN(val) || double.IsInfinity(val)) val = 0;
+
+        // Build numeric format like "0.#" or "0.##"
+        var fmt = decimals <= 0 ? "0" : "0." + new string('#', decimals);
+        var num = val.ToString(fmt, CultureInfo.InvariantCulture);
+        return $"{num} {unit}";
     }
 
-    private static (double value, string unit) Auto(double bytesPerSecond)
+    /// <summary>
+    /// Converts BYTES PER SECOND to a numeric value and its unit label,
+    /// depending on UnitMode. Auto prefers bits for network speeds.
+    /// </summary>
+    public static (double value, string unit) ToValueAndUnit(double bytesPerSecond, UnitMode unitMode)
     {
-        double abs = Math.Abs(bytesPerSecond);
-        if (abs >= 1024d * 1024d)
-        {
-            return (bytesPerSecond / 1024d / 1024d, "MiB/s");
-        }
-        if (abs >= 1024d)
-        {
-            return (bytesPerSecond / 1024d, "KiB/s");
-        }
-        return (bytesPerSecond, "B/s");
-    }
+        if (bytesPerSecond < 0 || double.IsNaN(bytesPerSecond) || double.IsInfinity(bytesPerSecond))
+            bytesPerSecond = 0;
 
-    public static string FormatText(double bytesPerSecond, UnitMode mode, int precision = 1)
-    {
-        var (value, unit) = Format(bytesPerSecond, mode);
-        return $"{value:F{precision}} {unit}";
+        double bps = bytesPerSecond; // bytes per second
+
+        switch (unitMode)
+        {
+            case UnitMode.Bps:   return (bps, "B/s");
+            case UnitMode.KiBps: return (bps / 1024d, "KiB/s");
+            case UnitMode.MiBps: return (bps / (1024d * 1024d), "MiB/s");
+
+            case UnitMode.bps:   return (bps * 8d, "bit/s");
+            case UnitMode.Kbps:  return (bps * 8d / 1_000d, "Kbit/s");
+            case UnitMode.Mbps:  return (bps * 8d / 1_000_000d, "Mbit/s");
+
+            case UnitMode.Auto:
+            default:
+                // Auto: pick a readable *bit/s* unit
+                double bits = bps * 8d;
+                if (bits >= 1_000_000d) return (bits / 1_000_000d, "Mbit/s");
+                if (bits >= 1_000d)     return (bits / 1_000d,     "Kbit/s");
+                return (bits, "bit/s");
+        }
     }
 }
