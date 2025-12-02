@@ -1,0 +1,47 @@
+<Window x:Class="NetTrayGauge.Views.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:NetTrayGauge.Views.Windows"
+        Title="Einstellungen" Width="480" Height="360" WindowStartupLocation="CenterOwner">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TabControl>
+            <TabItem Header="Allgemein">
+                <StackPanel Margin="12" Orientation="Vertical" Spacing="8">
+                    <CheckBox Content="Autostart aktivieren" IsChecked="{Binding Settings.StartWithWindows}" />
+                    <CheckBox Content="Digitale Anzeige" IsChecked="{Binding Settings.ShowDigitalOverlay}" />
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="Intervall (ms)" VerticalAlignment="Center" />
+                        <TextBox Width="80" Text="{Binding Settings.UpdateIntervalMs}" />
+                        <TextBlock Text="Glättung" VerticalAlignment="Center" />
+                        <TextBox Width="60" Text="{Binding Settings.SmoothingSamples}" />
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Netzwerk">
+                <StackPanel Margin="12" Orientation="Vertical" Spacing="8">
+                    <TextBlock Text="Bevorzugtes Interface" />
+                    <ComboBox ItemsSource="{Binding Interfaces}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Settings.PreferredInterfaceId}" />
+                    <Button Content="Liste aktualisieren" Click="RefreshInterfaces_OnClick" Width="160" />
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Design">
+                <StackPanel Margin="12" Orientation="Vertical" Spacing="8">
+                    <TextBlock Text="Theme" />
+                    <ComboBox SelectedValue="{Binding Settings.Theme}" ItemsSource="{Binding Source={x:Static local:SettingsWindow.ThemeValues}}" />
+                    <TextBlock Text="Tray-Icon Größe" />
+                    <ComboBox SelectedValue="{Binding Settings.TrayIconSize}" ItemsSource="{Binding Source={x:Static local:SettingsWindow.TrayIconSizeValues}}" />
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,12,0,0">
+            <Button Content="Export" Click="OnExport" />
+            <Button Content="Import" Click="OnImport" />
+            <Button Content="Speichern" Click="OnSave" IsDefault="True" />
+            <Button Content="Schließen" Click="OnClose" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+</Window>
