@@ -10,10 +10,10 @@ public class NetworkSnapshot
 {
     public string InterfaceId { get; init; } = string.Empty;
     public string InterfaceName { get; init; } = string.Empty;
-    public double DownloadBytesPerSecond { get; init; }
-    public double UploadBytesPerSecond { get; init; }
-    public DateTime Timestamp { get; init; }
-    public bool IsValid { get; init; }
+    public double DownloadBytesPerSecond { get; init; };
+    public double UploadBytesPerSecond { get; init; };
+    public DateTime Timestamp { get; init; };
+    public bool IsValid { get; init; };
 
     public static NetworkSnapshot Empty(string message = "") => new()
     {
