@@ -126,8 +126,60 @@ public class NotifyIconService : IDisposable
             _popupViewModel.UpdateScales(_scales.DownloadMax, _scales.UploadMax);
             var icon = _renderer.Render(snapshot, _settingsService.Current, _scales, DpiHelper.GetScale());
             _notifyIcon.Icon = icon;
-            _notifyIcon.Text = $"Down: {Utilities.UnitFormatter.FormatText(snapshot.DownloadBytesPerSecond, _settingsService.Current.UnitMode)}\nUp: {Utilities.UnitFormatter.FormatText(snapshot.UploadBytesPerSecond, _settingsService.Current.UnitMode)}";
+            _notifyIcon.Text = BuildTooltip(snapshot);
         });
+    }
+
+    private string BuildTooltip(NetworkSnapshot snapshot)
+    {
+        const int maxLength = 63; // WinForms limit for NotifyIcon.Text
+        var unitMode = _settingsService.Current.UnitMode;
+
+        var down = Utilities.UnitFormatter.FormatText(snapshot.DownloadBytesPerSecond, unitMode, 1);
+        var up = Utilities.UnitFormatter.FormatText(snapshot.UploadBytesPerSecond, unitMode, 1);
+        var tooltip = ComposeTooltip(down, up);
+
+        if (tooltip.Length <= maxLength)
+        {
+            return tooltip;
+        }
+
+        down = Utilities.UnitFormatter.FormatText(snapshot.DownloadBytesPerSecond, unitMode, 0);
+        up = Utilities.UnitFormatter.FormatText(snapshot.UploadBytesPerSecond, unitMode, 0);
+        tooltip = ComposeTooltip(down, up);
+
+        if (tooltip.Length <= maxLength)
+        {
+            return tooltip;
+        }
+
+        int maxDownLength = Math.Max(0, maxLength - "Up: ".Length - 1);
+        string downLine = ClampLine("Down: ", down, maxDownLength);
+
+        int remaining = Math.Max(0, maxLength - downLine.Length - 1);
+        string upLine = ClampLine("Up: ", up, remaining);
+
+        return $"{downLine}\n{upLine}";
+    }
+
+    private static string ComposeTooltip(string down, string up) => $"Down: {down}\nUp: {up}";
+
+    private static string ClampLine(string label, string value, int maxLength)
+    {
+        var line = $"{label}{value}";
+        if (line.Length <= maxLength)
+        {
+            return line;
+        }
+
+        int available = Math.Max(0, maxLength - label.Length);
+        if (available <= 0)
+        {
+            return label.TrimEnd();
+        }
+
+        var trimmedValue = value.Substring(0, Math.Min(value.Length, available));
+        return $"{label}{trimmedValue}";
     }
 
     private void UpdateScales(NetworkSnapshot snapshot)
