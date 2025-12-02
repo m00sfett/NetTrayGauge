@@ -172,6 +172,8 @@ public class NetworkMonitor : IDisposable
 
     private NetworkInterface? ResolveInterface(Settings settings)
     {
+        var previousInterfaceId = _currentInterface?.Id;
+
         if (!string.IsNullOrWhiteSpace(settings.PreferredInterfaceId) &&
             _currentInterface != null &&
             _currentInterface.Id != settings.PreferredInterfaceId)
@@ -199,17 +201,25 @@ public class NetworkMonitor : IDisposable
             if (_currentInterface != null)
             {
                 _logger.Info($"Using preferred interface {_currentInterface.Name}");
-                return _currentInterface;
             }
         }
 
-        _currentInterface = interfaces
-            .OrderByDescending(i => i.Speed)
-            .FirstOrDefault();
-
-        if (_currentInterface != null)
+        if (_currentInterface == null)
         {
-            _logger.Info($"Auto-selected interface {_currentInterface.Name}");
+            _currentInterface = interfaces
+                .OrderByDescending(i => i.Speed)
+                .FirstOrDefault();
+
+            if (_currentInterface != null)
+            {
+                _logger.Info($"Auto-selected interface {_currentInterface.Name}");
+            }
+        }
+
+        if (_currentInterface != null && _currentInterface.Id != previousInterfaceId)
+        {
+            Reset();
+            _lastTimestamp = DateTime.UtcNow;
         }
 
         return _currentInterface;
