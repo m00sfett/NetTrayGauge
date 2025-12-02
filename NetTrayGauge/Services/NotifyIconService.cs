@@ -119,7 +119,14 @@ public class NotifyIconService : IDisposable
 
     private void OnSnapshot(object? sender, NetworkSnapshot snapshot)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        var dispatcher = Application.Current.Dispatcher;
+
+        if (dispatcher.HasShutdownStarted || dispatcher.HasShutdownFinished)
+        {
+            return;
+        }
+
+        _ = dispatcher.InvokeAsync(() =>
         {
             _popupViewModel.Update(snapshot, _settingsService.Current.UnitMode);
             UpdateScales(snapshot);
