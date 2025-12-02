@@ -262,6 +262,8 @@ public class NotifyIconService : IDisposable
 
     public void Dispose()
     {
+        _monitor.SnapshotAvailable -= OnSnapshot;
+        _notifyIcon.MouseClick -= NotifyIconOnMouseClick;
         _notifyIcon.Dispose();
         _menu.Dispose();
         _renderer.Dispose();
