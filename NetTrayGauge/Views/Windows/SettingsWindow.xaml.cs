@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Windows;
 using Microsoft.Win32;
 using NetTrayGauge.Models;
@@ -28,14 +29,30 @@ public partial class SettingsWindow : Window
 
     private void OnSave(object sender, RoutedEventArgs e)
     {
-        _viewModel.Save();
-        if (_viewModel.Settings.StartWithWindows)
+        try
         {
-            _autostartService.Enable();
+            _viewModel.Save();
         }
-        else
+        catch (Exception ex)
         {
-            _autostartService.Disable();
+            ShowError("Could not save settings.", ex);
+            return;
+        }
+
+        try
+        {
+            if (_viewModel.Settings.StartWithWindows)
+            {
+                _autostartService.Enable();
+            }
+            else
+            {
+                _autostartService.Disable();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowError("Settings saved, but failed to update Windows startup option.", ex);
         }
     }
 
@@ -54,7 +71,14 @@ public partial class SettingsWindow : Window
         var dialog = new SaveFileDialog { Filter = "JSON|*.json" };
         if (dialog.ShowDialog() == true)
         {
-            _viewModel.SettingsService.Export(dialog.FileName);
+            try
+            {
+                _viewModel.SettingsService.Export(dialog.FileName);
+            }
+            catch (Exception ex)
+            {
+                ShowError("Could not export settings.", ex);
+            }
         }
     }
 
@@ -63,9 +87,22 @@ public partial class SettingsWindow : Window
         var dialog = new OpenFileDialog { Filter = "JSON|*.json" };
         if (dialog.ShowDialog() == true)
         {
-            _viewModel.SettingsService.Import(dialog.FileName);
-            DataContext = null;
-            DataContext = _viewModel;
+            try
+            {
+                _viewModel.SettingsService.Import(dialog.FileName);
+                DataContext = null;
+                DataContext = _viewModel;
+            }
+            catch (Exception ex)
+            {
+                ShowError("Could not import settings.", ex);
+            }
         }
+    }
+
+    private void ShowError(string message, Exception exception)
+    {
+        Debug.WriteLine($"{message}: {exception}");
+        MessageBox.Show(this, message, "NetTrayGauge", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }
