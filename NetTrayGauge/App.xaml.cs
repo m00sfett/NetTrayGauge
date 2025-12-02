@@ -25,7 +25,7 @@ public partial class App : Application
 
         var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NetTrayGauge");
         _loggingService = new LoggingService(appData);
-        _settingsService = new SettingsService(appData);
+        _settingsService = new SettingsService(appData, _loggingService);
         _settingsService.Load();
 
         var autostart = new AutostartService("NetTrayGauge", Environment.ProcessPath ?? string.Empty);

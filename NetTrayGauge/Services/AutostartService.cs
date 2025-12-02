@@ -20,8 +20,9 @@ public class AutostartService
 
     public void Enable()
     {
+        var normalizedPath = NormalizePath(_executablePath);
         using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, true) ?? Registry.CurrentUser.CreateSubKey(RunKeyPath);
-        key?.SetValue(_appName, $"\"{_executablePath}\"");
+        key?.SetValue(_appName, $"\"{normalizedPath}\"");
     }
 
     public void Disable()
@@ -34,6 +35,16 @@ public class AutostartService
     {
         using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, false);
         var value = key?.GetValue(_appName) as string;
-        return !string.IsNullOrWhiteSpace(value);
+        var storedPath = NormalizePath(value);
+        var currentPath = NormalizePath(_executablePath);
+
+        if (string.IsNullOrWhiteSpace(storedPath))
+        {
+            return false;
+        }
+
+        return string.Equals(storedPath, currentPath, StringComparison.OrdinalIgnoreCase);
     }
+
+    private static string NormalizePath(string? path) => (path ?? string.Empty).Trim().Trim('"');
 }

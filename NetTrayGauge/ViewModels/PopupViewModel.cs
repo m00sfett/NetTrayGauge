@@ -63,6 +63,8 @@ public class PopupViewModel : ViewModelBase
         UnitMode = unitMode;
         if (!snapshot.IsValid)
         {
+            Download = 0;
+            Upload = 0;
             DownloadText = snapshot.InterfaceName;
             UploadText = snapshot.InterfaceName;
             return;
