@@ -1,0 +1,21 @@
+<Window x:Class="NetTrayGauge.Views.Windows.PopupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:NetTrayGauge.Views.Controls"
+        Title="Netzwerk" Width="320" Height="240" WindowStyle="ToolWindow" ResizeMode="CanResizeWithGrip" Topmost="True">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <controls:GaugeControl Grid.Row="0" Title="Download" Value="{Binding Download}" MaxValue="{Binding DownloadScale}" />
+        <controls:GaugeControl Grid.Row="1" Title="Upload" Value="{Binding Upload}" MaxValue="{Binding UploadScale}" />
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+            <TextBlock Text="↓ " FontWeight="Bold"/>
+            <TextBlock Text="{Binding DownloadText}" Margin="4,0"/>
+            <TextBlock Text="↑ " FontWeight="Bold"/>
+            <TextBlock Text="{Binding UploadText}" Margin="4,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

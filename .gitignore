@@ -1,0 +1,10 @@
+bin/
+obj/
+publish/
+*.user
+*.log
+*.tmp
+**/bin/
+**/obj/
+**/publish/
+*.ico
