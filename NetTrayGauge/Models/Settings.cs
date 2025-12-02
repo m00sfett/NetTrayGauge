@@ -16,9 +16,9 @@ public class Settings
     public string FontFamily { get; set; } = "Segoe UI";
     public TrayIconSize TrayIconSize { get; set; } = TrayIconSize.Large;
     public UnitMode UnitMode { get; set; } = UnitMode.Auto;
-    public double? MaxDownloadScale { get; set; }
-    public double? MaxUploadScale { get; set; }
-    public string? PreferredInterfaceId { get; set; }
+    public double? MaxDownloadScale { get; set; };
+    public double? MaxUploadScale { get; set; };
+    public string? PreferredInterfaceId { get; set; };
     public double TickDensity { get; set; } = 0.35;
     public double NeedleThickness { get; set; } = 1.8;
     public double ArcThickness { get; set; } = 2.4;
