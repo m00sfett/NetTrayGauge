@@ -1,0 +1,15 @@
+/workspaces/NetTrayGauge/NetTrayGauge/bin/Debug/net8.0/NetTrayGauge
+/workspaces/NetTrayGauge/NetTrayGauge/bin/Debug/net8.0/NetTrayGauge.deps.json
+/workspaces/NetTrayGauge/NetTrayGauge/bin/Debug/net8.0/NetTrayGauge.runtimeconfig.json
+/workspaces/NetTrayGauge/NetTrayGauge/bin/Debug/net8.0/NetTrayGauge.dll
+/workspaces/NetTrayGauge/NetTrayGauge/bin/Debug/net8.0/NetTrayGauge.pdb
+/workspaces/NetTrayGauge/NetTrayGauge/obj/Debug/net8.0/NetTrayGauge.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/NetTrayGauge/NetTrayGauge/obj/Debug/net8.0/NetTrayGauge.AssemblyInfoInputs.cache
+/workspaces/NetTrayGauge/NetTrayGauge/obj/Debug/net8.0/NetTrayGauge.AssemblyInfo.cs
+/workspaces/NetTrayGauge/NetTrayGauge/obj/Debug/net8.0/NetTrayGauge.csproj.CoreCompileInputs.cache
+/workspaces/NetTrayGauge/NetTrayGauge/obj/Debug/net8.0/NetTrayGauge.sourcelink.json
+/workspaces/NetTrayGauge/NetTrayGauge/obj/Debug/net8.0/NetTrayGauge.dll
+/workspaces/NetTrayGauge/NetTrayGauge/obj/Debug/net8.0/refint/NetTrayGauge.dll
+/workspaces/NetTrayGauge/NetTrayGauge/obj/Debug/net8.0/NetTrayGauge.pdb
+/workspaces/NetTrayGauge/NetTrayGauge/obj/Debug/net8.0/NetTrayGauge.genruntimeconfig.cache
+/workspaces/NetTrayGauge/NetTrayGauge/obj/Debug/net8.0/ref/NetTrayGauge.dll
