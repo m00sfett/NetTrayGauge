@@ -131,17 +131,27 @@ public class NetworkMonitor : IDisposable
         }
 
         var elapsed = (now - _lastTimestamp).TotalSeconds;
-        _lastTimestamp = now;
 
         if (elapsed <= 0)
         {
+            Reset();
+            _lastTimestamp = now;
             return NetworkSnapshot.Empty("Warte auf Daten...");
         }
 
         var rxDelta = stats.BytesReceived - _lastRx;
         var txDelta = stats.BytesSent - _lastTx;
+
+        if (rxDelta < 0 || txDelta < 0)
+        {
+            Reset();
+            _lastTimestamp = now;
+            return NetworkSnapshot.Empty("Warte auf Daten...");
+        }
+
         _lastRx = stats.BytesReceived;
         _lastTx = stats.BytesSent;
+        _lastTimestamp = now;
 
         var rxPerSecond = rxDelta / elapsed;
         var txPerSecond = txDelta / elapsed;
