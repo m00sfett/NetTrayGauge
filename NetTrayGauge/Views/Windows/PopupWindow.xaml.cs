@@ -39,9 +39,26 @@ public partial class PopupWindow : Window
 
     private void OnClosing(object? sender, CancelEventArgs e)
     {
+        if (IsApplicationShuttingDown())
+        {
+            PersistBounds();
+            return;
+        }
+
         e.Cancel = true;
         Hide();
         PersistBounds();
+    }
+
+    private static bool IsApplicationShuttingDown()
+    {
+        var app = Application.Current;
+        if (app is null)
+        {
+            return false;
+        }
+
+        return app.Dispatcher.HasShutdownStarted || app.Dispatcher.HasShutdownFinished;
     }
 
     private void PersistBounds()
