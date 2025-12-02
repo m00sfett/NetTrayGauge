@@ -133,6 +133,14 @@ public class NetworkMonitor : IDisposable
 
     private NetworkInterface? ResolveInterface(Settings settings)
     {
+        if (!string.IsNullOrWhiteSpace(settings.PreferredInterfaceId) &&
+            _currentInterface != null &&
+            _currentInterface.Id != settings.PreferredInterfaceId)
+        {
+            _logger.Info("Preferred interface changed; resetting selection");
+            _currentInterface = null;
+        }
+
         if (_currentInterface != null && _currentInterface.OperationalStatus == OperationalStatus.Up)
         {
             return _currentInterface;
